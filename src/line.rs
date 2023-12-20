@@ -1,13 +1,15 @@
+use std::process;
 
+mod command;
 
 pub struct Line {
-    full_text: String,
-    
+
+   text: String,
+   commands: Vec<Command>,
+
 }
 
 
 impl Line {
-    pub fn new(raw_text: &str) {
-        println!("new line object");
-    }
+    pub fn parse_for_pipes(
 }

@@ -2,12 +2,13 @@ use std::io;
 //use std::process::Command;
 use std::io::Write;
 use std::env;
-mod auxiliary;
+use std::os::fd::AsFd;
 mod command;
-mod line;
 
 fn main() {
  //   println!("Hello, world!");
+ 
+    let mut command_stack = Vec::new();
 
     loop {
         let mut line = String::new();
@@ -18,11 +19,20 @@ fn main() {
         };
         print!("\x1b[4m\x1b[38;5;45mrsh\x1b[0m {}> ", path.display());
         io::stdout().flush().expect("Failed to flush stdio");
+        //event loop?
+        //
+        //
         io::stdin().read_line(&mut line).expect("Failed to read line");
+        line_stack.push(line.clone());
         let com = command::Command::new(&mut line);
+        let stioh = io::stdin();
+        let infd = stioh.as_fd();
+        println!("{:?}", infd);
         
-        //args = auxiliary::tokenize_command(&mut line);
+        println!("commmand stak: {:?}", line_stack);
+        
         com.match_execute(); 
+
         //pipes
         //
         //

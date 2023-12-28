@@ -1,1 +1,4 @@
-main: rustc -o rsh main.rs
+
+
+rustc -o rsh main.rs
+

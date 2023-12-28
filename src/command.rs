@@ -1,15 +1,16 @@
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
+use std::io::Error;
 use std::process;
 use std::env;
 
 #[derive(Debug)]
 pub struct Command{
-    cmd: String, 
-    args: Vec<String>,
-    instream: Option<File>,
-    outstream: Option<File>,
+    pub cmd: String, 
+    pub args: Vec<String>,
+    pub instream: Option<File>,
+    pub outstream: Option<File>,
 }
 
 impl Command{
@@ -37,6 +38,16 @@ impl Command{
             };
         }
 
+        //initialize members
+        //
+        //
+
+        let cmd = argv[0].to_string();
+        let args: Vec<_> = argv[1..].iter().map(|arg| arg.to_string()).collect();
+        let instream = infile;
+        let outstream = outfile;
+
+
 
 //        println!("outvec: {:?}", outvec);
 //        println!("invec: {:?}", invec);
@@ -44,16 +55,16 @@ impl Command{
 //        println!("outfile: {:?}", outfile);
 //        println!("infile: {:?}", infile);
         let this = Self {
-            cmd: argv[0].to_string(),
-            args: argv[1..].iter().map(|arg| arg.to_string()).collect(),
-            instream: infile,
-            outstream: outfile,
+            cmd: cmd, 
+            args: args,  
+            instream: instream,
+            outstream: outstream,
         };
         this
     }
     
 
-    pub fn match_execute(self) {
+    pub fn match_execute(&mut self) {
         match self.cmd.as_str() {
             "cd" => {
                 let mut new_dir = env::current_dir().unwrap();
@@ -66,35 +77,40 @@ impl Command{
                 }
             }
             "exit" => process::exit(0),
-            "history" => auxiliary::history(),
+            //"history" => auxiliary::history(),
             _ => {
                 //println!("{}", self.cmd);
                 //println!("{:?}", self.args);
-
-                let mut cmd = process::Command::new(self.cmd);
-                cmd.args(self.args);
-                match self.instream {
-                    None => (),
-                    Some(f)  => {
-                                 //println!("instream: {:?}", self.instream.unwrap());
-                                 cmd.stdin(f);
-                    },
+                let mut com_obj = process::Command::new(&self.cmd);
+                com_obj.args(&self.args);
+                match &self.instream {
+                        None => (),
+                        Some(f)  => {
+                                     //println!("instream: {:?}", self.instream.unwrap());
+                                     com_obj.stdin(f.try_clone().unwrap());
+                        },
                 }
-                match self.outstream {
+                match &self.outstream {
                     None => (),
                     Some(f)  => {
                                  //println!("outstream: {:?}", self.outstream.unwrap());
-                                 cmd.stdout(f);
+                                 com_obj.stdout(f.try_clone().unwrap());
                     },
                 }
-                let child = cmd.spawn();
+                let child = com_obj.spawn();
+
                 match child {
-                    Ok(mut child) => {child.wait().unwrap();},
+                    Ok(mut childp) => {
+                        childp.wait().unwrap();
+                    },
+
                     Err(e) => {eprintln!("{}", e);},
                 };
             }
         }
     }
+
+
 }
 
 

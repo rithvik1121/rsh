@@ -1,7 +1,7 @@
 use std::process;
 use std::process::Stdio;
 use std::process::Child;
-use crate::command::Command as mycmd;
+use rsh::command::Command as mycmd;
 
 #[derive(Debug)]
 pub struct Line {

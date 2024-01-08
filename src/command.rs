@@ -70,7 +70,13 @@ impl Command{
                 let mut new_dir = env::current_dir().unwrap();
                 //println!("{:?}", self.args.len());
                 if(self.args.len() > 0) {
-                    new_dir = PathBuf::from(&self.args[0]);
+                    if(&self.args[0] == "~") {
+                        let home_dir = env::var("HOME").unwrap();
+                        new_dir = PathBuf::from(home_dir);
+                    }
+                    else {
+                        new_dir = PathBuf::from(&self.args[0]);
+                    }
                 }
                 if let Err(e) = env::set_current_dir(&new_dir) {
                     eprintln!("{}", e);

@@ -1,0 +1,6 @@
+
+enum OpCode {
+    CONSTANT,
+
+    RETURN,
+}

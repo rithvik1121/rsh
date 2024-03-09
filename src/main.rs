@@ -6,32 +6,49 @@ use std::path::Path;
 use std::os::fd::AsFd;
 use std::str;
 use std::fs;
+use std::collections::HashMap;
 use rsh::lexer::Lexer;
-mod line;
+use rsh::line::Line;
+use rsh::bytecode::{Chunk, OpCode, ValueType};
+use rsh::vm::VM;
+use rsh::tokens::TokenType;
 
-
+use strum::IntoEnumIterator;
 
 fn main() {
  
 
+    let mut vm = VM::new();
     let args: Vec<String> = env::args().collect();
 //    println!("{:?}", args);
     if args.len() > 2 {
         println!("usage: rsh [*.yass]");
-        exit(1);
+       // exit(1);
     }
-    else if args.len() == 2 {
-        let source_text = fs::read_to_string(&args[1]).expect("Failed to read file");
-        let mut lexer = Lexer::new(&source_text);
-        loop {
-            println!("{:?}", lexer.lex());
-            if(lexer.current == '\0') {
+        
 
-                break;
-            }
-            lexer.advance();
-            
-        }
+    else if args.len() == 2 {
+
+        let source_text = fs::read_to_string(&args[1]).expect("Failed to read file");
+
+
+ //       VM::init();
+
+        //let mut chunk_stack: Vec<Chunk> = Vec::new();
+        //chunk_stack.push(OpCode::RETURN);
+        
+
+//        println!("{:?}", test_chunk);
+
+        //chunk_stack.push(OpCode::CONSTANT);
+        //test_chunk.disassemble_chunk();        
+        
+        vm.interpret(&source_text);
+
+        //disassembleChunk(&chunk);
+        //interpret(&chunk);
+
+//        VM::free();
         exit(0);
     }
 
@@ -46,7 +63,7 @@ fn main() {
 
 
  
-    let mut line_stack = Vec::new();
+    //let mut line_stack = Vec::new();
 
     loop {
         let mut line = String::new();
@@ -57,27 +74,29 @@ fn main() {
         };
         match path.strip_prefix(env::var("HOME").unwrap()) {
             Ok(p) => {path = Path::new("~").to_path_buf().join(p.to_path_buf());},
-            Err(e) => (),
+            Err(_e) => (),
 
         };
         print!("\x1b[4m\x1b[38;5;45mrsh\x1b[0m {} -> ", path.display());
         io::stdout().flush().expect("Failed to flush stdio");
         io::stdin().read_line(&mut line).expect("Failed to read line");
 
-        line_stack.push(line.clone());
+        //line_stack.push(line.clone());
+        vm.interpret(&line);
+        vm.free();
 
 
-        let split_lines: Vec<String> = line.trim().split(';').map(|linestr: &str| linestr.to_string()).collect(); 
-        for line in split_lines {
-            let line_struct = line::Line::new(&line.clone());
-
-            let stioh = io::stdin();
-            let infd = stioh.as_fd();
+    //    let split_lines: Vec<String> = line.trim().split(';').map(|linestr: &str| linestr.to_string()).collect(); 
+      //  for line in split_lines {
+        //    let line_struct = Line::new(&line.clone());
+//
+   //         let stioh = io::stdin();
+     //       let _infd = stioh.as_fd();
     //        println!("infd: {:?}", infd);
             
             
-            line_struct.execute_line();
-        }
+       //     line_struct.execute_line();
+        //}
 
     }
 }

@@ -1,7 +1,7 @@
 use std::process;
 use std::process::Stdio;
 use std::process::Child;
-use rsh::command::Command as mycmd;
+use crate::command::Command as mycmd;
 
 #[derive(Debug)]
 pub struct Line {
@@ -25,7 +25,7 @@ impl Line {
     
 
     pub fn generate_commands(text: &str) -> Vec<mycmd> {
-        let mut cv: Vec<mycmd> = text.split('|').map(|token| mycmd::new(token)).collect();
+        let cv: Vec<mycmd> = text.split('|').map(|token| mycmd::new(token)).collect();
 
         return cv;
     }
@@ -68,7 +68,7 @@ impl Line {
                     //Some(output) => {com_obj.stdin(*output);},
                 //}
             }
-            let mut cochild = com_obj.spawn();
+            let cochild = com_obj.spawn();
             if index == self.commands.len()-1 {
                 match cochild {
                     Ok(mut childp) => {
@@ -82,7 +82,7 @@ impl Line {
             }
             else {
                 match cochild {
-                    Ok(mut childp) => {
+                    Ok(childp) => {
                         previous_command = Some(childp);
                     },
 

@@ -1,5 +1,9 @@
+use crate::parser::{Precedence, Parser};
+use crate::bytecode::{OpCode, ValueType};
+
+
 #[allow(non_camel_case_types)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum TokenType {
 
     //script operators
@@ -66,11 +70,41 @@ pub enum TokenType {
 
 }
 
+impl TokenType {
+
+    pub fn get_precedence(tok: &TokenType) -> Precedence {
+        match tok{
+            TokenType::PLUS | TokenType::MINUS => Precedence::TERM,
+            TokenType::MULT | TokenType::DIV => Precedence::FACTOR,
+            TokenType::COMMAND => Precedence::PRIMARY,
+
+            _ => Precedence::NONE,
+
+        }
+    }
+
+    pub fn get_prefix(tok: &TokenType) -> fn(&mut Parser, &mut Vec<OpCode>, &mut Vec<ValueType>) {
+        match tok{
+            TokenType::MINUS => Parser::unary,
+            TokenType::NUMBER => Parser::number,
+            TokenType::LEFT_PAREN => Parser::grouping,
+            _ => Parser::none,
+        }
+    }
+
+    pub fn get_infix(tok: &TokenType) -> fn(&mut Parser, &mut Vec<OpCode>, &mut Vec<ValueType>) {
+        match tok{
+            TokenType::PLUS | TokenType::MINUS | TokenType::MULT | TokenType::DIV => Parser::binary,
+            _ => Parser::none,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Token {
-    token_type: TokenType,
-    source: String,
-    line: i32,
+    pub token_type: TokenType,
+    pub source: String,
+    pub line: i32,
 }
 
 impl Token {
@@ -81,4 +115,28 @@ impl Token {
             line: line,
         }
     }
+    
+
 }
+
+
+//    impl Ord for Token{
+//
+//        fn cmp(&self, other: &Self) -> Ordering {
+//            println!("Comparing: {:?} with {:?}", self, other);
+//            Self::get_precedence(self).cmp(&Self::get_precedence(other))
+//        }
+//    }
+
+//   impl PartialOrd for Token {
+//        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+//            Some(self.cmp(other)) 
+//        }
+//    }
+
+
+//   impl PartialEq for Token {
+//        fn eq(&self, other: &Self) -> bool {
+//            Self::get_precedence(self) == Self::get_precedence(other)
+//        }
+//    }

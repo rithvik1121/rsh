@@ -1,7 +1,6 @@
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use std::io::Error;
 use std::process;
 use std::env;
 
@@ -69,8 +68,8 @@ impl Command{
             "cd" => {
                 let mut new_dir = env::current_dir().unwrap();
                 //println!("{:?}", self.args.len());
-                if(self.args.len() > 0) {
-                    if(&self.args[0] == "~") {
+                if self.args.len() > 0 {
+                    if &self.args[0] == "~" {
                         let home_dir = env::var("HOME").unwrap();
                         new_dir = PathBuf::from(home_dir);
                     }

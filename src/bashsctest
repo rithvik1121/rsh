@@ -1,2 +1,2 @@
-
-echo "this is in fish"
+#!/bin/bash
+echo "this is in bash"

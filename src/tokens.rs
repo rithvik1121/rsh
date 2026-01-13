@@ -1,5 +1,6 @@
 use crate::parser::{Precedence, Parser};
-use crate::bytecode::{OpCode, ValueType};
+use crate::bytecode::Chunk;
+use crate::environment::Env;
 
 
 #[allow(non_camel_case_types)]
@@ -12,6 +13,13 @@ pub enum TokenType {
     MULT,
     DIV,
     ASSIGN,
+    INITIALIZE,
+    ANNOTATION, 
+    INT,
+    FLOAT,
+    CHAR,
+    BOOL,
+    STR,
 
     LESS,
     GREATER,
@@ -48,8 +56,10 @@ pub enum TokenType {
     NUMBER,
     TRUE,
     FALSE,
+    NULL,
 
     COMMAND,
+    PARAMETER,
 
     //keywords
     FOR,
@@ -62,9 +72,11 @@ pub enum TokenType {
     CLASS,
     THIS,
     LET,
+    LOOP,
 
 
 
+    WRITE,
     ERROR,
     EOF
 
@@ -74,27 +86,42 @@ impl TokenType {
 
     pub fn get_precedence(tok: &TokenType) -> Precedence {
         match tok{
-            TokenType::PLUS | TokenType::MINUS => Precedence::TERM,
-            TokenType::MULT | TokenType::DIV => Precedence::FACTOR,
-            TokenType::COMMAND => Precedence::PRIMARY,
-
+            TokenType::AND => Precedence::AND,
+            TokenType::OR => Precedence::OR,
+            TokenType::NOT_EQ | TokenType::EQ => Precedence::EQ,
+            TokenType::GREATER | TokenType::GREATER_EQ | TokenType::LESS | TokenType::LESS_EQ => Precedence::COMP,
+            TokenType::PLUS | TokenType::MINUS  => Precedence::TERM,
+            TokenType::MULT | TokenType::DIV | TokenType::INPUT | TokenType::OUTPUT | TokenType::PIPE => Precedence::FACTOR,
+            TokenType::LEFT_PAREN => Precedence::CALL,
             _ => Precedence::NONE,
 
         }
     }
 
-    pub fn get_prefix(tok: &TokenType) -> fn(&mut Parser, &mut Vec<OpCode>, &mut Vec<ValueType>) {
+    pub fn get_prefix(tok: &TokenType) -> fn(&mut Parser, &mut Chunk, &mut Env) {
         match tok{
-            TokenType::MINUS => Parser::unary,
+            TokenType::MINUS | TokenType::NOT => Parser::unary,
             TokenType::NUMBER => Parser::number,
             TokenType::LEFT_PAREN => Parser::grouping,
+            TokenType::FALSE | TokenType::TRUE | TokenType::NULL | TokenType::STRING => Parser::literal,
+            TokenType::IDENTIFIER => Parser::variable,
+            TokenType::WRITE | TokenType::IF | TokenType::ELSE | TokenType::LOOP | TokenType::FN => Parser::statement,
+            TokenType::COMMAND => Parser::command,
+            TokenType::PARAMETER => Parser::command,
             _ => Parser::none,
         }
     }
 
-    pub fn get_infix(tok: &TokenType) -> fn(&mut Parser, &mut Vec<OpCode>, &mut Vec<ValueType>) {
+    pub fn get_infix(tok: &TokenType) -> fn(&mut Parser, &mut Chunk, &mut Env) {
         match tok{
-            TokenType::PLUS | TokenType::MINUS | TokenType::MULT | TokenType::DIV => Parser::binary,
+            TokenType::PLUS | TokenType::MINUS | TokenType::MULT | TokenType::DIV |
+            TokenType::NOT_EQ | TokenType::EQ | TokenType::GREATER | TokenType::LESS | 
+            TokenType::GREATER_EQ | TokenType::LESS_EQ | TokenType::PIPE | TokenType::INPUT |
+            TokenType::OUTPUT => Parser::binary,
+            TokenType::AND => Parser::and,
+            TokenType::OR => Parser::or,
+            TokenType::LEFT_PAREN => Parser::func_call,
+            
             _ => Parser::none,
         }
     }
@@ -116,27 +143,4 @@ impl Token {
         }
     }
     
-
 }
-
-
-//    impl Ord for Token{
-//
-//        fn cmp(&self, other: &Self) -> Ordering {
-//            println!("Comparing: {:?} with {:?}", self, other);
-//            Self::get_precedence(self).cmp(&Self::get_precedence(other))
-//        }
-//    }
-
-//   impl PartialOrd for Token {
-//        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-//            Some(self.cmp(other)) 
-//        }
-//    }
-
-
-//   impl PartialEq for Token {
-//        fn eq(&self, other: &Self) -> bool {
-//            Self::get_precedence(self) == Self::get_precedence(other)
-//        }
-//    }

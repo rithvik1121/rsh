@@ -7,7 +7,7 @@ use crate::command::Command as mycmd;
 pub struct Line {
 
    text: String,
-   commands: Vec<mycmd>,
+   pub commands: Vec<mycmd>,
 
 }
 

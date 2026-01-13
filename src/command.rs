@@ -48,6 +48,7 @@ impl Command{
 
 
 
+
 //        println!("outvec: {:?}", outvec);
 //        println!("invec: {:?}", invec);
 //        println!("{:?}", argv);
@@ -114,8 +115,6 @@ impl Command{
             }
         }
     }
-
-
 }
 
 

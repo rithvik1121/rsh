@@ -1,8 +1,20 @@
+use crate::values::ValueType;
+
 #[derive(Debug, Clone)]
 pub enum OpCode {
     RETURN,
     CONSTANT(usize),
     NEGATE,
+    NOT,
+    EQ,
+    GREATER,
+    LESS,
+
+
+    NULL,
+    FALSE,
+    TRUE,
+    STRING,
 
     ADD,
     SUBTRACT,
@@ -11,55 +23,31 @@ pub enum OpCode {
     DIV,
 
 
-    COMMAND,
-    ARGUMENT,
+    COMMAND(usize),
+    ARGUMENT(usize),
+    EXEC,
+    INPUT,
+    OUTPUT,
+    PIPE,
 
+    WRITE,
+    READ,
+    GLOBAL,
+    GETVAR,
+    SETVAR,
+    VAR(i32),
+    SCOPEUP,
+    SCOPEDOWN,
+
+    IF(usize),
+    JUMP(isize),
+    ENDLOOP(isize),
+    OR(usize),
+    CALL(usize),
+    POP,
     EOF,
 }
 
-
-
-
-#[derive(Debug,Clone, Copy)]
-pub enum ValueType {
-    auto,
-    bool(bool),
-    int(i32),
-    float(f32),
-    char(char),
-    null,
-}
-
-impl ValueType {
-    pub fn extract_int(vt: ValueType) -> Option<i32> {
-        match vt {
-            ValueType::int(i) => Some(i),
-            _ => None,
-        }
-
-    }
-    pub fn extract_float(vt: ValueType) -> Option<f32> {
-        match vt {
-            ValueType::float(f) => Some(f),
-            _ => None,
-        }
-    }
-    pub fn extract_bool(vt: ValueType) -> Option<bool> {
-        match vt {
-            ValueType::bool(b) => Some(b),
-            _ => None,
-        }
-    }
-    pub fn extract_char(vt: ValueType) -> Option<char> {
-        match vt {
-            ValueType::char(c) => Some(c),
-            _ => None,
-        }
-    }
-
-    pub fn parse_type(){}
-
-}
 
 #[derive(Debug)]
 pub struct Chunk {

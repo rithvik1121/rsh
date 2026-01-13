@@ -1,6 +1,17 @@
-() {}+-*/
-!= =,.<!<>=
-== <=
->== "bruh"
-900 1 2 12"damn"
-if for
+fn test_func(test_param1, test_param2) {
+    let z:=95;
+    write("func1");
+    write(test_param1);
+    write("Function call");
+}
+
+fn test_func2(test_param3, test_param4) {
+    write("func2");
+    write("going to fucking kill myself");
+}
+
+let x:= 21;
+let y:= 11;
+test_func(x, y);
+test_func2(0, 1);
+write("hey man what the actual fuck");

@@ -1,0 +1,8 @@
+fn test_func() {
+    let z:=95;
+    write("func1");
+    write("Function call");
+}
+
+test_func();
+write("bruh");
